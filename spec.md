@@ -20,7 +20,7 @@ Data BTC cấp đã dùng: Không (Track D nhóm tự tìm data theo quy định
 - Việc họ cố làm xong: Khiếu nại và nhận lại tiền bồi thường (hoặc voucher) cho món ăn bị thiếu trong đơn hàng vừa nhận.
 - Hôm nay họ giải bằng gì, hỏng ở đâu, vì sao chưa bỏ: Giải bằng chatbot menu có sẵn trong app hoặc gọi hotline. Hỏng ở chỗ chatbot cứng nhắc, bắt làm thủ tục rườm rà, nhân viên xử lý rất chậm (vài giờ đến vài ngày) trong khi khách cần giải quyết ngay lúc đang ăn. Chưa bỏ vì vẫn cần dịch vụ giao đồ ăn mỗi ngày.
 - Pain (KHÔNG chữ AI): Khách đặt đồ ăn khi nhận đơn bị thiếu một món, khiếu nại qua hệ thống hỗ trợ thì menu trả lời tự động cứng nhắc, nhân viên hỗ trợ phản hồi chậm sau nhiều giờ hoặc nhiều ngày, khiến khách mất tiền món thiếu và bữa ăn bị gián đoạn, ức chế.
-- Bằng chứng — số chính + kết luận (chi tiết: `evidence/summary.md`): Đang đào 50 review 1-3 sao trên Google Play (ShopeeFood/Grab) và phỏng vấn trực tiếp 3 học viên trong lớp từng gặp sự cố thiếu món trong 1 tháng qua (tổng hợp tại CP2).
+- Bằng chứng — số chính + kết luận (chi tiết: `evidence/summary.md`, `evidence/data-mining.md`): Đã đào 2.000 review 1–3 sao trên Google Play (27/11/2026) → ShopeeFood **24/800 (3,00%)** và GrabFood **7/1.200 (0,58%)** phản ánh thiếu/sai món hoặc hỗ trợ/hoàn tiền chậm (25 ví dụ đã ẩn danh). Đang phỏng vấn ≥3 học viên ngoài nhóm để kiểm chéo trước CP3.
 
 ## §2. Impact & quyết định chọn *(guide 1.3)*
 
