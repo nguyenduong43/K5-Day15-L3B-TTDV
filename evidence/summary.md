@@ -8,7 +8,7 @@
 | Nguồn | Đạt ngưỡng? | File |
 |---|---|---|
 | Đào data (x/N, %, cách đếm chạy lại được, ≥5 ví dụ) | ☑ | [Dữ liệu review](data-mining.md) |
-| Phỏng vấn (≥3 người ngoài nhóm, đúng người dùng) | ☐ Có 2 ca thuộc D1, chờ xác nhận thời điểm. Ca P3 là mua hàng qua sàn. | [P1](interviews/P1.md), [P2](interviews/P2.md), [P3](interviews/P3.md) |
+| Phỏng vấn (≥3 người ngoài nhóm, đúng người dùng) | ☐ Có 2 ca về app giao đồ ăn. P1 ghi 0 lần trong tháng qua, P2 chưa xác nhận ngày xảy ra. P3 mua hàng qua sàn. | [P1](interviews/P1.md), [P2](interviews/P2.md), [P3](interviews/P3.md) |
 | Khảo sát (≥20 người ngoài nhóm, đúng người dùng) | ☐ | `evidence/survey/` |
 
 ## 2. Số chính
@@ -16,16 +16,16 @@
 - **Đào data:** số dưới đây là mức tối thiểu tìm thấy sau sàng lọc và đọc xác nhận. [Cách đếm và 25 ví dụ](data-mining.md)
   - ShopeeFood (review 1–3 sao, 01/07–26/11/2026). **24/800 (3,00%)** có ít nhất một vấn đề. Trong đó **5/800 (0,63%)** thiếu món, **4/800 (0,50%)** giao sai món hoặc sai đơn và **18/800 (2,25%)** hỗ trợ hoặc hoàn tiền chậm.
   - GrabFood (review 1–3 sao của ứng dụng Grab, 12/09–26/11/2026, mẫu số gồm các dịch vụ khác của Grab). **7/1.200 (0,58%)** có ít nhất một vấn đề. Trong đó **2/1.200 (0,17%)** thiếu món, **1/1.200 (0,08%)** giao sai món hoặc sai đơn và **5/1.200 (0,42%)** hỗ trợ hoặc hoàn tiền chậm.
-- **Phỏng vấn:** 2 người kể về thiếu món khi đặt qua app giao đồ ăn. Cả hai kể nhận voucher. Thời điểm xảy ra của hai ca còn cần xác nhận để biết có thuộc tháng vừa qua hay không.
+- **Phỏng vấn:** 2 người kể về thiếu món khi đặt qua app giao đồ ăn. Cả hai kể nhận voucher. P1 ghi 0 lần thiếu món trong tháng qua. P2 chưa xác nhận ngày xảy ra ca thiếu rau.
 - **Khảo sát:** chưa dùng nguồn này.
 
 Phỏng vấn nhiều vai thì đếm theo từng vai, không cộng chung.
 
 | | Vai | Gặp pain? | Số lần / 1 tháng qua | Lần gần nhất mất | Đang xoay xở bằng |
 |---|---|---|---|---|---|
-| P1 | Khách ShopeeFood | Thiếu bún ăn kèm nem nướng | Chưa rõ | Báo ngay. Phản hồi khoảng 30 phút. Phương án được đưa ra trong vài phút theo lời kể, mốc bắt đầu chưa rõ. | Chụp ảnh và đánh giá 1 sao. Nhận voucher 10.000 đồng lần sau. |
+| P1 | Khách ShopeeFood | Thiếu bún ăn kèm nem nướng | 0 theo lời kể | Báo ngay. Phản hồi khoảng 30 phút. Phương án được đưa ra trong vài phút theo lời kể, mốc bắt đầu chưa rõ. | Chụp ảnh và đánh giá 1 sao. Nhận voucher 10.000 đồng lần sau. |
 | P2 | Khách GrabFood | Thiếu rau ăn kèm | Nói chưa gặp lại trong tháng qua. Chưa rõ ngày xảy ra ca được kể. | Khoảng 5–15 phút để gửi yêu cầu trên app ở những lần có báo. Chờ phản hồi và xử lý được mô tả là ngắn, chưa có số cụ thể. | Gọi tài xế, báo trên app kèm ảnh hoặc bỏ qua tùy lần. Nhận voucher ở ca có xử lý. |
-| P3 | Khách mua bánh qua Shopee | Nhận 5 cái, tổng ước tính dưới 100 g so với 200 g đã đặt. Ca tham khảo ngoài D1. | Chưa rõ | Chưa rõ thời gian chờ. Theo lời kể, người bán chưa phản hồi. | Nhắn người bán kèm ảnh rồi đánh giá 1 sao. |
+| P3 | Khách mua bánh qua Shopee | Nhận 5 cái, tổng ước tính dưới 100 g so với 200 g đã đặt. Ca tham khảo ngoài D1. | 0. Ca được kể xảy ra khoảng 3 tháng trước. | Báo ngay với người bán. Theo lời kể, người bán chưa phản hồi. | Nhắn người bán kèm ảnh rồi đánh giá 1 sao. |
 
 ## 3. ≥5 trích dẫn hoặc ví dụ nguyên văn (có nguồn, bỏ tên)
 
@@ -45,7 +45,7 @@ Review và hai lời kể đều ghi nhận thiếu món trên ShopeeFood và Gr
 
 ## 5. Kết luận
 
-Giả thuyết ở `evidence/hypothesis.md`: **phải đổi theo bằng chứng hiện có**. Các ca đã xác nhận qua sàng lọc review chưa ủng hộ ngưỡng 25%. Tỷ lệ 3,00% và 0,58% là mức tối thiểu tìm thấy trong hai mẫu review 1–3 sao, gồm nhiều loại phản ánh. Điều kiện phỏng vấn **ít nhất 2/3 người chờ quá 12 giờ** chưa đủ dữ liệu để kiểm tra. Cần xác nhận ngày xảy ra và thời gian xử lý của P1, P2, rồi bổ sung người đúng phạm vi D1 có ca xảy ra trong tháng qua cho đủ ba. [Giả thuyết ban đầu](hypothesis.md)
+Giả thuyết ở `evidence/hypothesis.md`: **phải đổi theo bằng chứng hiện có**. Các ca đã xác nhận qua sàng lọc review chưa ủng hộ ngưỡng 25%. Tỷ lệ 3,00% và 0,58% là mức tối thiểu tìm thấy trong hai mẫu review 1–3 sao, gồm nhiều loại phản ánh. Điều kiện phỏng vấn **ít nhất 2/3 người chờ quá 12 giờ** chưa đủ dữ liệu để kiểm tra. Cần xác nhận ngày xảy ra và thời gian xử lý của P2, rồi bổ sung người đúng phạm vi D1 có ca xảy ra trong tháng qua cho đủ ba. [Giả thuyết ban đầu](hypothesis.md)
 
 ## Lịch hẹn (dùng cho CP2 — chỉ ghi vai và giờ, không tên)
 
