@@ -4,16 +4,17 @@
 > Giữ nguyên tên file `TEAMS.md` ở thư mục gốc repo, giữ nguyên các dòng `- Tên nhóm:` … và tiêu đề cột của bảng. Chỉ thay chỗ `____`.
 > Kiểm bằng `python run.py check`: phần "Kiểm TEAMS.md" không báo gì là đúng format.
 
-- Tên nhóm: ____
-- Lớp: ____
-- Track: ____
-- Link repo: ____
+- Tên nhóm: TTDV
+- Lớp: L3B
+- Track: D
+- Link repo: https://github.com/nguyenduong43/K5-Day15-L3B-TTDV
 
 | STT | Họ và tên | Mã học viên | Vai trò | Phần việc chính |
 |---|---|---|---|---|
-| 1 | ____ | ____ | Đội trưởng | ____ |
-| 2 | ____ | ____ | Thành viên | ____ |
-| 3 | ____ | ____ | Thành viên | ____ |
+| 1 | ____ | ____ | Đội trưởng | Xây dựng luồng AI quyết định cách xử lý báo thiếu món |
+| 2 | ____ | ____ | Thành viên | Viết công cụ tra đơn, tra chính sách và kiểm hạn mức hoàn tiền |
+| 3 | ____ | ____ | Thành viên | Tạo đơn hàng và chính sách mẫu, viết data card và mô phỏng chi phí |
+| 4 | ____ | ____ | Thành viên | Viết bộ câu thử và tiêu chí chấm, chạy đánh giá hai lượt |
 
 **Quy tắc điền**
 - **Lớp:** `L3A` hoặc `L3B`. **Track:** một chữ `A` (EdTech), `B` (Y tế), `C` (Du lịch), `D` (Thương mại điện tử), `E` (Tài chính) hoặc `F` (Làn khác). **Link repo:** link GitHub công khai của nhóm.
