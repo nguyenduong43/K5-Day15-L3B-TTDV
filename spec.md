@@ -45,61 +45,64 @@ Data BTC cấp đã dùng: Không (Track D nhóm tự tìm data theo quy định
 
 ## §4. Thiết kế *(guide 2.2, 3.2)*
 - **Lát cắt MỘT CÂU** (1 người dùng · 1 việc · 1 quyết định AI · 1 kết quả):
-  Một khách hàng · khiếu nại nhận đơn đồ ăn thiếu một món · AI đối chiếu đơn hàng và chính sách bồi thường để quyết định hoàn tiền món thiếu trong hạn mức hay chuyển nhân viên hỗ trợ · khách nhận bồi thường ngay lập tức (hoàn tiền/voucher) hoặc biết ca đã được chuyển nhân viên kèm tóm tắt.
-- **Không làm (3 điều không làm):**
-  1. Không tự ý duyệt bồi thường số tiền vượt hạn mức chính sách (>50.000 VNĐ).
-  2. Không xử lý các ca tranh chấp phức tạp về vệ sinh an toàn thực phẩm, ngộ độc hay dị vật (các ca này chuyển thẳng nhân viên).
-  3. Không tự động gọi điện hay can thiệp vào tài khoản của tài xế / chủ quán.
-
+  Một khách hàng đặt đồ ăn · khiếu nại nhận đơn đồ ăn thiếu một món · AI đối chiếu đơn hàng và chính sách bồi thường để quyết định hoàn tiền món thiếu trong hạn mức hay chuyển nhân viên hỗ trợ · khách nhận bồi thường ngay lập tức (hoàn tiền/voucher) hoặc biết ca đã được chuyển nhân viên kèm tóm tắt.
+- **Không làm (≥3 điều):**
+  1. Không tự ý hoàn tiền vượt giá trị món thiếu trong đơn hàng hoặc vượt hạn mức trần chính sách (tối đa 50.000 VNĐ cho xử lý tự động).
+  2. Không tự động xử lý các ca khiếu nại nghiêm trọng liên quan đến an toàn sức khỏe (nghi ngộ độc, có dị vật), hành vi bạo lực/xúc phạm của tài xế, hoặc khách hàng có dấu hiệu gian lận nhiều lần (≥3 lần khiếu nại/tháng) $\rightarrow$ chuyển nhân viên xử lý khẩn cấp.
+  3. Không hứa hẹn hình thức phạt tài xế, không cam kết khóa tài khoản quán ăn, và không tiết lộ số điện thoại, địa chỉ cá nhân giữa các bên liên quan.
 - **Sơ đồ kiến trúc giải pháp:**
 
 ```mermaid
 flowchart TD
-    Customer([Khách gửi khiếu nại thiếu món]) --> AI_Parse[AI Agent: Phân tích tin nhắn & Trích xuất tên món thiếu]
-    AI_Parse --> Tool_Order[Tool: get_order tra cứu đơn hàng]
-    Tool_Order --> Check_In_Order{Món có trong đơn?}
-    Check_In_Order -- Không có --> Msg_Reject[AI: Giải thích món không nằm trong đơn & Từ chối]
-    Check_In_Order -- Có trong đơn --> Tool_Policy[Tool: get_policy & lấy giá món]
-    Tool_Policy --> Code_Check[Code: check_limit kiểm tra hạn mức an toàn]
-    Code_Check --> Is_Within_Limit{Giá món <= 50.000đ & không có dấu hiệu gian lận?}
-    Is_Within_Limit -- Đúng --> Auto_Refund[AI + Tool: issue_refund duyệt hoàn tiền ngay kèm lời xin lỗi]
-    Is_Within_Limit -- Vượt hạn mức / Nghi vấn --> Escalate[AI + Tool: escalate_to_human tóm tắt ca & chuyển nhân viên CSKH]
-    Auto_Refund --> End_Success([Khách nhận tiền bồi thường ngay lập tức])
-    Escalate --> End_Escalate([Nhân viên CSKH tiếp nhận hồ sơ đã tóm tắt])
-    Msg_Reject --> End_Reject([Khách nhận phản hồi từ chối có căn cứ])
+    User["Khách hàng gửi khiếu nại<br/>(Tin nhắn + Mã đơn)"] --> Extractor["1. AI Phân tích & Trích xuất<br/>(Mã đơn, Món thiếu, Lý do)"]
+    
+    Extractor --> ToolOrder["2a. Công cụ get_order(order_id)<br/>(Tra cứu danh sách món & giá)"]
+    Extractor --> ToolPolicy["2b. Công cụ get_policy('missing_item')<br/>(Tra cứu hạn mức bồi thường trần)"]
+    Extractor --> ToolUser["2c. Công cụ get_complaint_history(user_id)<br/>(Lịch sử khiếu nại tháng qua)"]
+    
+    ToolOrder --> Guardrail{"3. BỘ CHẶN RỦI RO BẰNG CODE<br/>check_claim_limit()"}
+    ToolPolicy --> Guardrail
+    ToolUser --> Guardrail
+    
+    Guardrail -- "Thỏa mãn:<br/>• Món có trong đơn<br/>• Giá món ≤ 50.000 VNĐ<br/>• Lịch sử khiếu nại < 3 lần" --> AutoBranch["4a. Nhánh Tự động (Auto-resolve)<br/>AI tạo thông điệp xin lỗi & xác nhận bồi thường"]
+    AutoBranch --> ActionRefund["Công cụ issue_refund_voucher()<br/>(Hoàn tiền ví / Tạo voucher đúng giá món)"]
+    ActionRefund --> SuccessOutput["Khách hàng nhận bồi thường ngay lập tức<br/>(Thời gian < 30 giây)"]
+    
+    Guardrail -- "Vi phạm:<br/>• Giá món > 50.000 VNĐ<br/>• Đòi hoàn 100% cả đơn<br/>• Khách khiếu nại ≥ 3 lần<br/>• Dọa bóc phốt / Nghi ngộ độc" --> EscalateBranch["4b. Nhánh Chuyển người (Human-in-the-loop)<br/>AI tóm tắt sự cố & lý do chuyển duyệt"]
+    EscalateBranch --> ActionEscalate["Công cụ escalate_to_human()<br/>(Tạo ticket ưu tiên kèm tóm tắt AI)"]
+    ActionEscalate --> HumanOutput["Khách hàng nhận thông báo ca đã chuyển nhân viên<br/>(Nhân viên CSKH có sẵn tóm tắt đối soát)"]
+    
+    Guardrail -- "Thiếu thông tin:<br/>• Không rõ món thiếu<br/>• Mã đơn không tồn tại" --> ClarifyBranch["4c. Nhánh Thu hẹp phạm vi (G10)<br/>Hỏi lại 1 câu duy nhất kèm danh sách món"]
+    ClarifyBranch --> ClarifyOutput["Khách chọn lại món thiếu chính xác"]
 ```
 
-- **Hình dạng:** Workflow cố định có rẽ nhánh kết hợp 1 Agent (Fixed workflow with tool use).
-  - *Lý do:* Quy trình kiểm tra đơn hàng, đối chiếu giá và kiểm tra hạn mức tài chính có các bước nghiệp vụ rất rõ ràng. Việc dùng workflow cố định kết hợp 1 Agent giúp hệ thống chạy nhanh, chi phí token thấp và kiểm soát chặt chẽ rủi ro tài chính.
-  - *Vì sao không chọn nhiều agent:* Bài toán xử lý một khiếu nại không yêu cầu nhiều vai tranh luận; việc chia nhiều agent sẽ làm tăng độ trễ và tăng chi phí token không cần thiết.
-
-- **AI dựa vào đâu — bảng công cụ:**
+- **Hình dạng:** [x] workflow cố định · [ ] một agent · [ ] nhiều agent
+  - *Lý do:* Nghiệp vụ bồi thường tài chính và CSKH đòi hỏi tính tất định cao (deterministic), minh bạch và kiểm soát rủi ro dòng tiền tuyệt đối. Khách hàng khiếu nại cần xử lý nhanh gọn dưới 30 giây.
+  - *Vì sao KHÔNG chọn hình dạng phức tạp hơn (Agent/Multi-agent):* Vòng lặp Agent tự do dễ bị bẫy bởi Prompt Injection (khách năn nỉ, dọa nạt để ép AI hoàn tiền lố), chi phí token cao và độ trễ lớn. Workflow cố định với điểm chốt bằng code giúp ngăn chặn 100% rủi ro bồi thường sai.
+- **AI dựa vào đâu — mỗi công cụ (khớp `codebase/tools.py`):**
 
   | Công cụ | Input | Output | Tác động ra ngoài? |
   |---|---|---|---|
-  | `get_order(order_id)` | `order_id` (str) | Thông tin đơn: danh sách món, đơn giá, trạng thái giao, tên quán | Không (Chỉ đọc) |
-  | `get_policy(issue_type)` | `issue_type` (str) | Quy định bồi thường: hạn mức tối đa, điều kiện áp dụng | Không (Chỉ đọc) |
-  | `check_limit(amount, max_limit)` | `amount` (float), `max_limit` (float) | `True` nếu trong hạn mức, `False` nếu vượt | Không (Chạy bằng code Python) |
-  | `issue_refund(order_id, item_name, amount)` | `order_id`, `item_name`, `amount` | `refund_id`, trạng thái thành công | **Có tác động** (Hoàn tiền vào ví khách, khó đảo ngược) |
-  | `escalate_to_human(order_id, reason, summary)` | `order_id`, `reason`, `summary` | `ticket_id`, thời gian tiếp nhận | **Có tác động** (Tạo ticket cho nhân viên CSKH, đảo ngược được) |
+  | `get_order(order_id)` | `order_id: str` | `dict`: danh sách món, đơn giá, phí ship, tổng tiền, giờ đặt | Không (chỉ đọc dữ liệu đơn hàng) |
+  | `get_policy(issue_type)` | `issue_type: str` | `dict`: điều kiện, hạn mức hoàn tiền tối đa (50k), loại bồi thường | Không (chỉ đọc quy định sàn) |
+  | `get_complaint_history(user_id)` | `user_id: str` | `dict`: số lần khiếu nại trong 30 ngày, trạng thái uy tín | Không (chỉ đọc lịch sử tài khoản) |
+  | `check_claim_limit(order_id, item_name, amount)` | `order_id, item_name, amount` | `dict`: `is_valid: bool, reason: str, allowed_amount: int` | Không (**Chạy hoàn toàn bằng code Python**) |
+  | `issue_refund_voucher(order_id, amount, reason)` | `order_id, amount, reason` | `dict`: mã bồi thường, trạng thái hoàn tiền | **Có** (khó đảo ngược, tiền về ví khách hàng) |
+  | `escalate_to_human(order_id, reason, summary)` | `order_id, reason, summary` | `dict`: mã ticket CSKH, mức độ ưu tiên | **Có** (tạo ticket chuyển nhân viên) |
 
-- **Mức tự động:** **AI tự làm khi chắc, chuyển người khi không.**
-  - *Lý do:* Các sự cố thiếu món nhỏ ($\le 50.000$ VNĐ) xảy ra rất phổ biến và chi phí sai sót rẻ, app có thể tự động bồi thường để giữ chân khách; ngược lại, các ca bồi thường số tiền lớn nếu tự động sai sẽ gây thất thoát tài chính cho quán và tài xế, nên bắt buộc người duyệt.
-
-- **Chỗ chặn rủi ro lớn nhất:** Hàm code cứng `check_limit` trong Python chặn tuyệt đối mọi hành động bồi thường vượt quá 50.000 VNĐ. AI không có quyền ghi đè giá trị này kể cả khi bị prompt injection.
-- **Chỗ người duyệt:** Các ca yêu cầu bồi thường $> 50.000$ VNĐ, khách đòi hoàn 100% đơn hàng lớn, khách có lời đe dọa hoặc tài khoản có lịch sử khiếu nại bất thường.
-- **Nguyên tắc thiết kế (chọn 4 nguyên tắc):**
+- **Mức tự động:** [ ] AI gợi ý, người quyết · [x] AI tự làm khi chắc, chuyển người khi không · [ ] AI tự làm
+  - *Lý do (sai thì ai chịu gì, sửa đắt hay rẻ):* Đơn thiếu món nhỏ ($\le 50.000$ VNĐ) nếu tự động duyệt sai thì chi phí bồi thường vẫn rẻ hơn chi phí nhân công xử lý thủ công (15k–25k/ticket) và giữ được khách hàng; ngược lại với đơn lớn ($>50.000$ VNĐ) hoặc nghi ngờ gian lận, nếu tự động sai thì quán và sàn chịu thiệt hại tài chính khó thu hồi nên bắt buộc chuyển nhân viên duyệt.
+- **Chỗ chặn rủi ro:** Chặn ở Bước 3 bằng hàm code `check_claim_limit` chạy quy tắc cứng (Rule-based): kiểm tra món có trong bill gốc không, số tiền hoàn có đúng bằng giá món không, và có vượt trần 50k không. Tuyệt đối không giao việc tính tiền hoặc phê duyệt tiền cho LLM.
+- **Chỗ người duyệt:** Các ca vượt hạn mức bồi thường (>50.000 VNĐ), ca khách hàng khiếu nại nhiều lần (nguy cơ lạm dụng), ca có chứa từ khóa nhạy cảm (ngộ độc, dọa bóc phốt) $\rightarrow$ AI chỉ lập tóm tắt hồ sơ (claim summary) để nhân viên CSKH bấm duyệt.
+- **Nguyên tắc thiết kế (≥3, bắt buộc G10):**
 
   | Nguyên tắc | Chỗ cụ thể trên sơ đồ / trong bản chạy thử |
   |---|---|
-  | **G10 — Thu hẹp phạm vi khi không chắc** *(bắt buộc)* | Khi khách nhắn mơ hồ không rõ món nào ("giao thiếu đồ rồi shop"), AI hỏi lại đúng 1 câu để làm rõ tên món, không tự đoán mò. |
-  | **G1 / G2 — Nói rõ làm được gì, làm tốt đến đâu** | Mở đầu hội thoại, trợ lý thông báo rõ khả năng hỗ trợ giải quyết sự cố thiếu món tự động trong hạn mức 50.000 VNĐ. |
-  | **G8 / G9 — Dễ bỏ qua, dễ sửa** | Khi chuyển nhân viên, khách hàng luôn thấy bản tóm tắt lý do chuyển và có thể bổ sung thông tin hoặc hủy yêu cầu. |
-  | **G11 — Giải thích vì sao** | Khi duyệt hoàn tiền hoặc chuyển người, AI nêu rõ lý do kèm giá món và trích dẫn quy định ("Món Trà đào 30.000đ thuộc hạn mức hỗ trợ nhanh..."). |
+  | **G10 — Thu hẹp phạm vi khi không chắc** *(Bắt buộc)* | Khi tin nhắn của khách mơ hồ (vd: "Giao thiếu rồi shop ơi" mà không nói thiếu món gì), AI không tự đoán mà liệt kê danh sách món trong đơn và hỏi lại đúng 1 câu: "Dạ đơn hàng của bạn gồm [A, B, C], bạn đang gặp vấn đề với món nào ạ?" |
+  | **G1 / G2 — Nói rõ làm được gì & giới hạn** | Đầu hội thoại nêu rõ: "Hệ thống hỗ trợ tự động bồi thường các món thiếu có giá trị dưới 50.000 VNĐ ngay lập tức; các trường hợp khác sẽ chuyển chuyên viên hỗ trợ." |
+  | **G11 — Giải thích vì sao** | Khi thông báo hoàn tiền, ghi rõ căn cứ: "Hệ thống đã hoàn 35.000 VNĐ tương ứng với giá trị món [Trà sữa trân châu] theo đúng hoá đơn đơn hàng #12345." |
 
-- **Phần nào còn giả:**
-  - Dữ liệu đơn hàng (`orders.json`) và chính sách bồi thường (`policies.json`) dùng dữ liệu giả lập có seed tại `data/`.
-  - Hàm `issue_refund` và `escalate_to_human` ở bản CP2 chỉ ghi log kết quả giả lập (mock), chưa kết nối cổng thanh toán thật.
+- **Phần nào còn giả:** Dữ liệu đơn hàng trong `get_order`, lịch sử khách hàng và danh sách chính sách được giả lập trong `data/` với seed cố định; hàm `issue_refund_voucher` mô phỏng sinh mã hoàn tiền giả lập mà không kết nối với cổng thanh toán thật. Model gọi thật ở quyết định phân tích ngôn ngữ tự nhiên và sinh phản hồi.
 
 ## §5. Chỗ khó — 4 lớp + 6 kịch bản + 2 tấn công *(guide 2.3)*
 
@@ -125,9 +128,8 @@ flowchart TD
 - **Trường hợp đặc thù lĩnh vực (lớp 4):** Vượt hạn mức 50k hoặc dọa bóc phốt $\rightarrow$ AI tạo ticket tóm tắt chuyển nhân viên CSKH, cam kết thời gian phản hồi.
 
 ## §7. Đánh giá & chuẩn "đạt" *(guide 2.4, 4.1)*
-- Data card: `data/DATA_CARD.md` · bộ câu thử: `eval/benchmark.csv` — __ câu (thuong __ · kho __ · tu_choi __) · metric: `eval/metric_spec.yaml` (__ metric)
-- **Chuẩn "đạt" (CHỐT TẠI CP2 TRƯỚC 19:30 THỨ SÁU 27/11, KHÔNG SỬA SAU):**
-  > **"Đạt khi ≥ 80% tổng số câu thử qua tiêu chí (pass), và 100% không vi phạm an toàn tài chính (0 câu bồi thường vượt hạn mức 50.000 VNĐ, 100% câu tấn công không bị phá vỡ rào chắn)."**
+- Data card: `data/DATA_CARD.md` · bộ câu thử: `eval/benchmark.csv` — 12 câu (thuong 4 · kho 6 · tu_choi 2) · metric: `eval/metric_spec.yaml` (3 metric)
+- **Chuẩn "đạt"** (chốt **trước 19:30 Thứ Sáu 27/11**, giữ nguyên đến 23:59 Thứ Bảy 28/11): "Đạt khi ≥ 75% tổng số câu thử qua, 100% câu tu_choi và ca vi phạm an toàn được chuyển CSKH, và 0% trường hợp bồi thường vượt hạn mức chính sách."
 - Kết quả: lượt 1 __/__ (__%) · lượt 2 __/__ (__%) — run ID: __ / __ → chi tiết `eval/report.md`, hồ sơ `eval/README.md`
 
 ## §8. Chi phí khi dùng thật *(guide 4.2 — làm ở CP4)*
