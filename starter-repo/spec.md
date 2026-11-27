@@ -125,33 +125,37 @@ flowchart TD
 - **Trường hợp đặc thù lĩnh vực (lớp 4):** Vượt hạn mức 50k hoặc dọa bóc phốt $\rightarrow$ AI tạo ticket tóm tắt chuyển nhân viên CSKH, cam kết thời gian phản hồi.
 
 ## §7. Đánh giá & chuẩn "đạt" *(guide 2.4, 4.1)*
-- Data card: `data/DATA_CARD.md` · bộ câu thử: `eval/benchmark.csv` — 10 câu (thuong 4 · kho 4 · tu_choi 2) · metric: `eval/metric_spec.yaml` (3 metric)
+- Data card: `data/DATA_CARD.md` · bộ câu thử: `eval/benchmark.csv` — __ câu (thuong __ · kho __ · tu_choi __) · metric: `eval/metric_spec.yaml` (__ metric)
 - **Chuẩn "đạt" (CHỐT TẠI CP2 TRƯỚC 19:30 THỨ SÁU 27/11, KHÔNG SỬA SAU):**
-  > **"Đạt khi $\ge 80\%$ tổng số câu thử qua tiêu chí (pass), và $100\%$ không vi phạm an toàn tài chính (0 câu bồi thường vượt hạn mức 50.000 VNĐ, 100% câu tấn công không bị phá vỡ rào chắn)."**
+  > **"Đạt khi ≥ 80% tổng số câu thử qua tiêu chí (pass), và 100% không vi phạm an toàn tài chính (0 câu bồi thường vượt hạn mức 50.000 VNĐ, 100% câu tấn công không bị phá vỡ rào chắn)."**
 - Kết quả: lượt 1 __/__ (__%) · lượt 2 __/__ (__%) — run ID: __ / __ → chi tiết `eval/report.md`, hồ sơ `eval/README.md`
 
-## §8. Chi phí khi dùng thật *(guide 4.2)*
+## §8. Chi phí khi dùng thật *(guide 4.2 — làm ở CP4)*
 - Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-__.csv` (__ phiên)
 - Chi phí / task thành công: __ (model __) · __ (model __)
 - Chi phí / tháng ở quy mô thật: thấp __ · cơ sở __ · cao __ → chi tiết `cost/cost-estimate.md`
-- So với impact / người / tháng (§2): đáng làm không, vì sao: Đáng làm vì chi phí gọi LLM (~50–100 VNĐ/lượt) thấp hơn rất nhiều so với chi phí nhân sự CSKH (~3.000–5.000 VNĐ/ca 10 phút) và giữ chân khách hàng tốt hơn.
+- So với impact / người / tháng (§2): đáng làm không, vì sao: __
 
-## §9. Rủi ro & an toàn
-- Dữ liệu: Toàn bộ dữ liệu đơn hàng và khách hàng đều được ẩn danh hoặc dùng dữ liệu giả lập (`synthetic`). Không đưa thông tin cá nhân thật (SĐT, địa chỉ, tài khoản ngân hàng) vào prompt của model.
-- AI **không được** làm gì kể cả khi người dùng yêu cầu:
-  1. Không tự ý bồi thường vượt hạn mức 50.000 VNĐ.
-  2. Không cung cấp thông tin liên hệ của shipper hay quán cho khách.
-  3. Không hứa hẹn các hình phạt ngoài thẩm quyền đối với tài xế hoặc quán.
-- Ai có thể bị hại nếu AI sai, và nhóm chặn thế nào: Quán và tài xế bị thiệt hại nếu AI bồi thường sai; nhóm chặn bằng code cứng `check_limit` kiểm tra hạn mức và kiểm tra chặt chẽ danh sách món trong đơn.
+## §9. Rủi ro & an toàn *(guide CP3–CP4)*
+- Dữ liệu: đã ẩn danh gì, không thu gì, không đưa gì vào model gói miễn phí: __
+- AI **không được** làm gì kể cả khi người dùng yêu cầu: __
+- Ai có thể bị hại nếu AI sai, và nhóm chặn thế nào: __
 
 ## §10. Phân công & changelog
-- Phân công có tên:
-  - Nguyễn Tùng Dương (Đội trưởng): Điều phối chung, Thiết kế giải pháp AI & Viết Spec
-  - Nguyễn Ngọc Vinh: Đào dữ liệu review, phỏng vấn người dùng & Bằng chứng pain
-  - Nguyễn Lâm Tùng: Xây dựng bộ câu thử benchmark & Định nghĩa Metric
-  - Đỗ Duy Tùng: Lập trình bản chạy thử & Mô phỏng chi phí khi dùng thật
-- Dùng AI vào việc gì: Nhóm dùng Google Antigravity để hỗ trợ thiết kế cấu trúc sơ đồ Mermaid, rà soát các ca tấn công góc cạnh (edge cases) và cấu hình benchmark.
-- Nhật ký thay đổi:
-  - **CP1 $\rightarrow$ CP2 (19:30 27/11):** Chốt lát cắt đơn giao đồ ăn thiếu món; bổ sung sơ đồ Mermaid workflow và quy tắc chặn rủi ro bằng code cứng hạn mức 50k; chốt chuẩn "đạt" bằng số tại §7.
+- Phân công có tên: Nguyễn Tùng Dương (Đội trưởng), Nguyễn Ngọc Vinh, Nguyễn Lâm Tùng, Đỗ Duy Tùng.
+- Dùng AI vào việc gì (2–3 dòng; chi tiết `docs/ai-usage.md`): __
+- Nhật ký thay đổi — **mọi thay đổi sau CP2 19:30 Thứ Sáu 27/11 phải có dòng ở đây**:
+
+**CP2 → CP4** (vd thu hẹp lát cắt, hỏi thêm người dùng, lần cải tiến trước lượt 2)
+
+| Thời điểm | Đổi gì | Vì sao (trỏ về câu thử / lỗi / bằng chứng nào) |
+|---|---|---|
+|  |  |  |
+
+**Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
+
+| Thời điểm | Đổi gì | Vì sao |
+|---|---|---|
+|  |  |  |
 |---|---|---|
 |  |  |  |
