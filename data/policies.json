@@ -1,0 +1,58 @@
+{
+  "version": "1.0",
+  "updated_at": "2026-11-27",
+  "platform": "FoodDelivery_Dispute_Rules",
+  "global_constraints": {
+    "max_auto_refund_per_item": 50000,
+    "max_monthly_claims_per_user": 3,
+    "allow_refund_shipping_fee_auto": false,
+    "supported_currencies": "VND",
+    "compensation_channels": [
+      "wallet_refund",
+      "promo_voucher"
+    ]
+  },
+  "policies": {
+    "missing_item": {
+      "name": "Khiếu nại giao thiếu món",
+      "auto_resolvable": true,
+      "max_limit": 50000,
+      "formula": "refund_exact_item_price",
+      "action_type": "wallet_refund",
+      "conditions": [
+        "Món phải có trong danh sách món của đơn hàng",
+        "Món chưa từng được bồi thường trong đơn này",
+        "Giá trị món sau giảm giá <= 50.000 VNĐ",
+        "Số lần khiếu nại của tài khoản trong 30 ngày < 3 lần"
+      ],
+      "escalation_triggers": [
+        "Giá trị món thiếu > 50.000 VNĐ",
+        "Khách đòi hoàn 100% cả đơn hàng",
+        "Khách có dấu hiệu khiếu nại bất thường (>= 3 lần/tháng)",
+        "Khách đe dọa bóc phốt hoặc đánh giá 1 sao"
+      ]
+    },
+    "wrong_item": {
+      "name": "Khiếu nại giao sai món",
+      "auto_resolvable": true,
+      "max_limit": 30000,
+      "formula": "compensation_voucher_30k",
+      "action_type": "promo_voucher"
+    },
+    "spilled_damaged": {
+      "name": "Đồ ăn bị tràn đổ một phần do vận chuyển",
+      "auto_resolvable": true,
+      "max_limit": 25000,
+      "formula": "compensation_voucher_25k",
+      "action_type": "promo_voucher"
+    },
+    "food_safety_hazard": {
+      "name": "Sự cố an toàn thực phẩm, ngộ độc, dị vật",
+      "auto_resolvable": false,
+      "max_limit": 0,
+      "action_type": "escalate_to_human",
+      "priority": "HIGH",
+      "note": "Tuyệt đối không giải quyết tự động, chuyển ngay chuyên viên xử lý khẩn cấp."
+    }
+  }
+}

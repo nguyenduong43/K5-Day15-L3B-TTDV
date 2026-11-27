@@ -1,0 +1,71 @@
+{
+  "orders": {
+    "ORD-101": {
+      "order_id": "ORD-101",
+      "user_id": "U1",
+      "restaurant": "Cơm Tấm Ba Ghiền",
+      "items": [
+        {"id": "item_1", "name": "Cơm sườn nướng", "price": 65000, "quantity": 1},
+        {"id": "item_2", "name": "Canh rong biển", "price": 15000, "quantity": 1},
+        {"id": "item_3", "name": "Trà đá đường", "price": 10000, "quantity": 1}
+      ],
+      "shipping_fee": 16000,
+      "total_paid": 96000,
+      "status": "delivered",
+      "claimed_items": []
+    },
+    "ORD-102": {
+      "order_id": "ORD-102",
+      "user_id": "U2",
+      "restaurant": "Trà Sữa ToCoToCo",
+      "items": [
+        {"id": "item_1", "name": "Trà sữa trân châu sợi", "price": 42000, "quantity": 1},
+        {"id": "item_2", "name": "Trà đào hạt chia", "price": 38000, "quantity": 1}
+      ],
+      "shipping_fee": 15000,
+      "total_paid": 95000,
+      "status": "delivered",
+      "claimed_items": []
+    },
+    "ORD-103": {
+      "order_id": "ORD-103",
+      "user_id": "U3_ABUSE",
+      "restaurant": "Gà Rán KFC",
+      "items": [
+        {"id": "item_1", "name": "Combo gà rán 3 miếng", "price": 105000, "quantity": 1},
+        {"id": "item_2", "name": "Khoai tây chiên vừa", "price": 25000, "quantity": 1}
+      ],
+      "shipping_fee": 20000,
+      "total_paid": 150000,
+      "status": "delivered",
+      "claimed_items": []
+    },
+    "ORD-104": {
+      "order_id": "ORD-104",
+      "user_id": "U1",
+      "restaurant": "Pizza Hut",
+      "items": [
+        {"id": "item_1", "name": "Pizza hải sản cỡ vừa", "price": 169000, "quantity": 1},
+        {"id": "item_2", "name": "Coca Cola lon", "price": 18000, "quantity": 1}
+      ],
+      "shipping_fee": 22000,
+      "total_paid": 209000,
+      "status": "delivered",
+      "claimed_items": []
+    }
+  },
+  "policies": {
+    "missing_item": {
+      "issue_type": "missing_item",
+      "max_auto_refund_amount": 50000,
+      "max_claims_monthly": 3,
+      "action": "refund_item_price_or_voucher",
+      "rule": "Món thiếu phải nằm trong đơn gốc; bồi thường đúng giá món; trần tối đa 50.000 VNĐ cho xử lý tự động. Vượt trần hoặc nghi ngờ lạm dụng phải chuyển nhân viên duyệt."
+    }
+  },
+  "user_complaint_history": {
+    "U1": {"user_id": "U1", "complaints_this_month": 0, "trust_score": "high"},
+    "U2": {"user_id": "U2", "complaints_this_month": 1, "trust_score": "medium"},
+    "U3_ABUSE": {"user_id": "U3_ABUSE", "complaints_this_month": 4, "trust_score": "low"}
+  }
+}
