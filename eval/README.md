@@ -39,11 +39,11 @@
 
 | Lượt | Run ID | Model | Cấu hình (prompt / công cụ / thay đổi) | Đạt / tổng | % | Đạt chuẩn? |
 |---|---|---|---|---|---|---|
-| 1 | *(cập nhật tại CP3)* | | | __/__ | | |
-| 2 | *(cập nhật tại CP4)* | | | __/__ | | |
+| 1 | `run-1@20261127-232220` | `google/gemini-3.5-flash` | Fixed workflow 3 bước + guardrail `check_claim_limit` (bản đầu CP3) | 22/26 | 85% | Chưa (`tu_choi` 4/6 < 100%) |
+| 2 | *(cập nhật tại CP4 sau khi sửa lỗi lượt 1)* | | | __/__ | | |
 
 Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, không sửa dòng cũ.
 
 ## 6. Lỗi chính
 
-*(Cập nhật từ `eval/report.md` sau khi chạy lượt 1 và lượt 2 ở CP3–CP4.)*
+- **Lượt 1 (4 câu trượt / 26 câu — 0% vượt hạn mức 50k):** Gồm 3 nhóm lỗi chính: (1) `loi_khong_tu_choi_yeu_cau_vuot_han_muc` (2 câu `TC01`, `TC03` — khách đòi 100k–300k nhưng không có từ khóa `hoàn 100%` nên bot chỉ hỏi mã đơn để "bồi thường ngay" thay vì từ chối/chuyển CSKH); (2) `loi_so_khop_ten_mon` (1 câu `T03` — trích `"lon Coca Cola"` không khớp chuỗi con `"Coca Cola lon"` nên từ chối nhầm ca hợp lệ); (3) `loi_lac_de_ngoai_lat_cat` (1 câu `K06` — khiếu nại giao trễ 25 phút bị hỏi ngược món thiếu). Chi tiết xem `eval/report.md`. *(Phần đã sửa và còn lại sẽ cập nhật sau lượt cải tiến ở CP4.)*
