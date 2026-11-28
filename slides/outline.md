@@ -14,7 +14,38 @@
 | 7 | **Kết luận** | • **Quyết định: GO (Triển khai thí điểm lát cắt thiếu món ≤ 50.000 VNĐ).**<br>• **3 con số chống lưng:**<br>  1. Pain thật trên 2.000 review (ShopeeFood 3,00%, GrabFood 0,58%) & tiết kiệm ~350 giờ CSKH/tháng *(tự ước tính)*.<br>  2. Độ chính xác: Lượt 1 **22/26 (85%)** → Lượt cải tiến **26/26 (100% đạt chuẩn)**, **0% vượt hạn mức 50k**, **0 câu tệ đi**.<br>  3. Chi phí vận hành: chỉ **4 ₫/task** (**25.641 ₫/tháng** cho 3.000 ca) với Gemini, hoặc **2 ₫/task** (**12.667 ₫/tháng**) với GPT-4o-mini. | Trang 1, 5, 6 | ☑ |
 | 8 | **Nếu có thêm 1 tuần** | • **1. Thay lọc từ khóa bằng Structured Output LLM (`eval/report.md` mục 4):** Khắc phục phụ thuộc regex ở nhánh ngoài lát cắt (`is_delay`, `is_canceled_order`, `demands_large`) để khái quát tốt trên câu thử lạ (vd đòi `75k` hay trễ `40 phút`).<br>• **2. Tập kiểm thử giữ riêng (held-out ~20%) & hội thoại đa lượt:** Chống overfitting vào 26 câu thử hiện có và lưu state phiên để khách không phải nhập lại mã đơn.<br>• **3. Đối chiếu mốc giờ giao thực tế & ảnh hóa đơn (Vision):** Tính `actual_delivery_time - estimated_time` và kiểm ảnh món thiếu bằng model đa phương thức. | `eval/report.md` mục 4 | ☑ |
 
----
+## Nội dung trang 1, 2 và 8
+
+### Trang 1 · Người dùng và vấn đề
+
+**Khi đơn giao thiếu món, khách cần biết cách báo và bước xử lý tiếp theo.**
+
+- **5/800 review ShopeeFood** và **2/1.200 review ứng dụng Grab** nêu rõ việc thiếu món. Nếu tính cả giao sai và hỗ trợ chậm, nhóm xác nhận được **24/800** và **7/1.200** trong hai mẫu review 1–3 sao. [Tổng hợp bằng chứng](../evidence/summary.md)
+- **“shop làm thiếu món”** — ShopeeFood R323. Người viết kể đã báo hỗ trợ và phải chờ phản hồi. [Review đã ẩn danh](../evidence/data-mining.md)
+
+### Trang 2 · Vì sao chọn D1
+
+**D1 có thể xử lý trọn một ca bằng dữ liệu đơn và chính sách bồi thường.**
+
+| Hướng | Chi phí hoặc thời gian | Quyết định |
+|---|---|---|
+| D1 · Xử lý thiếu món | P2 kể mất **5–15 phút để gửi yêu cầu**. P1 ước tính chờ **khoảng 30 phút để có phản hồi đầu tiên**. | Chọn. Đối chiếu được đơn, giá món và điều kiện xử lý. |
+| D2 · Đặt đơn nhóm | Ước tính **20–30 phút** để gom món, tính tiền và kiểm ràng buộc. | Giỏ hàng có nhiều ràng buộc về ngân sách và ăn uống. |
+| D3 · Trả hàng trên sàn | Ước tính **2–5 ngày** chờ xử lý. | Quy trình cần bằng chứng và duyệt qua nhiều bên. |
+
+**Impact minh họa:** 3.000 ca/tháng × 70% đủ điều kiện × 10 phút CSKH/ca ≈ **350 giờ CSKH/tháng**, theo kịch bản tự ước tính. Các thời gian P1 và P2 kể là hai bước khác nhau. [Bảng impact](../spec.md) · [Tổng hợp phỏng vấn](../evidence/summary.md)
+
+### Trang 8 · Nếu có thêm một tuần
+
+**Ưu tiên giúp khách hiểu mình cần làm gì sau khi gửi báo thiếu món.**
+
+1. **Làm rõ phản hồi.** Hiển thị phương án xử lý, bên phụ trách và việc khách cần làm tiếp. Kiểm lại bằng cách hỏi người thử tự giải thích kết quả trên cùng phiên bản demo. [Tổng hợp các điểm cần xem lại](../validation/log.md)
+2. **Kiểm lại ca ngoài phạm vi.** Lượt 1 đạt **4/6 câu từ chối**. Thử lại các ca giao trễ, giao sai và đơn đã hủy với cách diễn đạt mới để kiểm việc hướng dẫn đúng kênh hoặc chuyển CSKH. [Báo cáo đánh giá](../eval/report.md)
+3. **Kiểm lại impact.** Thu số ca thiếu món, tỷ lệ đủ điều kiện và thời gian xử lý thực tế để cập nhật kịch bản 350 giờ/tháng. [Bảng impact](../spec.md)
+
+> **Ghi chú khi ráp slide:** đối chiếu phiên bản dùng thử trước khi dùng tên nút, thông báo và thời gian thao tác trong log. Bản web hiện tại có nút “Kiểm tra yêu cầu”, còn ca `ORD-101` trong kết quả lượt 1 ghi hoàn 15.000 đồng. [Giao diện](../codebase/web/index.html) · [Kết quả lượt 1](../eval/run-1.csv)
+
+**Trước khi lên:** tải repo về một máy khác (hoặc thư mục mới), chạy theo mục "Chạy trong 3 phút" của `README.md` · `.env` có trên máy demo, đã gọi thử 1 câu trong vòng 1 giờ trước giờ demo · video dự phòng mở được bằng cửa sổ ẩn danh · biết bản chạy thử sẽ làm gì với **1 câu thử lạ** của giám khảo.
 
 ## Kiểm tra trước khi lên demo (14:00 – 14:25)
 - [ ] Tải repo về thư mục mới / máy khác, chạy thử theo mục "Chạy trong 3 phút" của `README.md`.

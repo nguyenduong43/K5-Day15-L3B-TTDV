@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Bản chạy thử hỗ trợ xử lý đơn giao thiếu món của nhóm TTDV.">
+  <title>Hỗ trợ đơn hàng · TTDV</title>
+  <link rel="stylesheet" href="/app.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">TT</span>
+        <div><strong>TTDV</strong><span>Hỗ trợ đơn hàng</span></div>
+      </div>
+      <span class="mode" id="mode" data-mode="loading" role="status">Đang kiểm tra cấu hình</span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div class="hero-copy">
+        <h1 id="page-title">Báo thiếu món</h1>
+        <p>Gửi thông tin về đơn vừa nhận để kiểm tra món thiếu và xem bước xử lý tiếp theo.</p>
+      </div>
+      <aside class="demo-notice" aria-label="Phạm vi bản chạy thử">
+        <strong>Bản chạy thử D1</strong>
+        <span>Dùng đơn mẫu. Hoàn tiền và chuyển hỗ trợ đều được mô phỏng.</span>
+      </aside>
+    </section>
+
+    <section class="samples" aria-labelledby="sample-title">
+      <h2 id="sample-title">Thử với một đơn mẫu</h2>
+      <div class="sample-grid">
+        <button class="sample" type="button" data-sample="standard" aria-pressed="false">
+          <span class="sample-icon" aria-hidden="true">₫</span>
+          <span><strong>Trong hạn mức</strong><small>ORD-101 · Canh rong biển</small></span>
+        </button>
+        <button class="sample" type="button" data-sample="escalation" aria-pressed="false">
+          <span class="sample-icon amber" aria-hidden="true">!</span>
+          <span><strong>Chuyển CSKH</strong><small>ORD-104 · Pizza hải sản</small></span>
+        </button>
+        <button class="sample" type="button" data-sample="clarification" aria-pressed="false">
+          <span class="sample-icon blue" aria-hidden="true">?</span>
+          <span><strong>Chưa rõ món thiếu</strong><small>ORD-102 · Cần bổ sung</small></span>
+        </button>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel" aria-labelledby="form-title">
+        <div class="panel-heading">
+          <h2 id="form-title">Thông tin khiếu nại</h2>
+          <p>Điền các trường bạn biết hoặc nhập cả thông tin đơn trong mô tả.</p>
+        </div>
+        <form id="claim-form">
+          <fieldset id="claim-fields">
+            <div class="field-grid">
+              <div class="field">
+                <label for="order-id">Mã đơn</label>
+                <input id="order-id" name="order" list="order-list" maxlength="32" autocomplete="off" placeholder="Ví dụ ORD-101">
+                <datalist id="order-list"></datalist>
+              </div>
+              <div class="field">
+                <label for="item-name">Món bị thiếu</label>
+                <input id="item-name" name="item" list="item-list" maxlength="140" autocomplete="off" placeholder="Ví dụ Canh rong biển">
+                <datalist id="item-list"></datalist>
+              </div>
+            </div>
+            <div class="order-preview" id="order-preview" hidden>
+              <strong id="order-restaurant"></strong>
+              <ul id="order-items" aria-label="Món trong đơn mẫu"></ul>
+            </div>
+            <div class="field description">
+              <label for="description">Mô tả thêm</label>
+              <textarea id="description" name="description" rows="4" maxlength="1200" placeholder="Ví dụ Đơn ORD-101 vừa giao đến nhưng thiếu Canh rong biển."></textarea>
+            </div>
+            <div class="form-actions">
+              <button class="primary" id="submit-claim" type="submit">Kiểm tra yêu cầu</button>
+              <button class="secondary" type="reset">Xóa nội dung</button>
+            </div>
+          </fieldset>
+        </form>
+      </section>
+
+      <section class="panel result-panel" aria-labelledby="result-title" id="result-panel">
+        <div class="panel-heading result-heading">
+          <h2 id="result-title">Kết quả xử lý</h2>
+          <span class="status" id="result-status" data-state="idle" aria-live="polite">Chưa gửi</span>
+        </div>
+        <div class="empty-result" id="empty-result">
+          <span class="empty-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <p>Gửi yêu cầu để xem phản hồi</p>
+          <span>Chương trình sẽ đối chiếu đơn mẫu với chính sách của bản thử.</span>
+        </div>
+        <div class="response-area" id="response-area" aria-live="polite" hidden>
+          <p class="response-text" id="response-text"></p>
+          <dl class="response-meta" id="response-meta" hidden>
+            <div><dt>Model</dt><dd id="result-model"></dd></div>
+            <div><dt>Lượt tra công cụ</dt><dd id="result-tools"></dd></div>
+            <div><dt>Token vào / ra</dt><dd id="result-tokens"></dd></div>
+          </dl>
+          <div class="copy-actions" id="copy-actions" hidden>
+            <button class="secondary" id="copy-output" type="button">Sao chép phản hồi</button>
+            <span id="copy-status" role="status"></span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

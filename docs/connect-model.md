@@ -140,7 +140,7 @@ def call_provider(system, user):
 
 ## 3. Thử
 
-1. `python run.py` → gõ 1 câu → thấy câu trả lời thật và dòng `(model: … · token vào … / ra …)`.
+1. Chạy `python run.py` và gửi một ca thiếu món trên trình duyệt. Kiểm tra tên model và số token ở phần kết quả.
 2. `python run.py eval --try` → chạy 3 câu thử đầu, thấy "Nối model được" là xong.
 3. `python run.py eval` → `eval/run-1.csv` + `traces/run-1.jsonl`.
 
