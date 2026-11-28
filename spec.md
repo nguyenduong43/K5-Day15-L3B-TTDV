@@ -20,19 +20,22 @@ Data BTC cấp đã dùng: Không (Track D nhóm tự tìm data theo quy định
 - Việc họ cố làm xong: Khiếu nại và nhận lại tiền bồi thường (hoặc voucher) cho món ăn bị thiếu trong đơn hàng vừa nhận.
 - Hôm nay họ giải bằng gì, hỏng ở đâu, vì sao chưa bỏ: Giải bằng chatbot menu có sẵn trong app hoặc gọi hotline. Hỏng ở chỗ chatbot cứng nhắc, bắt làm thủ tục rườm rà, nhân viên xử lý rất chậm (vài giờ đến vài ngày) trong khi khách cần giải quyết ngay lúc đang ăn. Chưa bỏ vì vẫn cần dịch vụ giao đồ ăn mỗi ngày.
 - Pain (KHÔNG chữ AI): Khách đặt đồ ăn khi nhận đơn bị thiếu một món, khiếu nại qua hệ thống hỗ trợ thì menu trả lời tự động cứng nhắc, nhân viên hỗ trợ phản hồi chậm sau nhiều giờ hoặc nhiều ngày, khiến khách mất tiền món thiếu và bữa ăn bị gián đoạn, ức chế.
-- Bằng chứng — số chính + kết luận (chi tiết: `evidence/summary.md`, `evidence/data-mining.md`): Đã đào 2.000 review 1–3 sao trên Google Play (27/11/2026) → ShopeeFood **24/800 (3,00%)** và GrabFood **7/1.200 (0,58%)** phản ánh thiếu/sai món hoặc hỗ trợ/hoàn tiền chậm (25 ví dụ đã ẩn danh). Đang phỏng vấn ≥3 học viên ngoài nhóm để kiểm chéo trước CP3.
+- Bằng chứng — số chính + kết luận (chi tiết: `evidence/summary.md`, `evidence/data-mining.md`):
+  - **Nguồn chính đạt ngưỡng (Đào data):** Quét 2.000 review 1–3 sao trên Google Play (27/11/2026) → ShopeeFood **24/800 (3,00%)** (5 thiếu món, 4 sai món/đơn, 18 hỗ trợ/hoàn tiền chậm) và GrabFood **7/1.200 (0,58%)** (2 thiếu món, 1 sai món/đơn, 5 hỗ trợ/hoàn tiền chậm), kèm 25 ví dụ đã ẩn danh.
+  - **Nguồn kiểm chéo (Phỏng vấn `P1`–`P3`):** 2 người dùng app giao đồ ăn (`P1` ShopeeFood, `P2` GrabFood) xác nhận có gặp thiếu món và từng nhận voucher, thời gian xử lý thực tế khác nhau (P1 khoảng 30 phút; P2 xử lý ngắn trên app, đôi khi bỏ qua vì ngại); `P3` (mua bánh qua sàn Shopee) giữ làm tham khảo ngoài D1. Chưa đạt ngưỡng 3 ca D1 trong tháng qua nhưng đủ kiểm chéo tính có thật của pain.
+  - **Kết luận:** Giả thuyết ban đầu (≥25% review, ≥2/3 người chờ >12h) **phải điều chỉnh** theo số liệu thật; pain thiếu món và hỗ trợ chậm là có thật nhưng trải nghiệm chậm rơi vào nhóm ca phức tạp/cần CSKH xử lý.
 
 ## §2. Impact & quyết định chọn *(guide 1.3)*
 
 | Hướng | Bao nhiêu người gặp | Bao nhiêu lần / tháng | Mỗi lần tốn gì | Impact / tháng | Làm kịp không | Chọn? |
 |---|---|---|---|---|---|---|
-| **D1. Xử lý khiếu nại đơn thiếu món** | ~3.000 đơn sự cố / 100k đơn | 1–2 lần / khách thường xuyên | Khách mất 35k tiền món thiếu + 15 phút bực bội; nhân viên CSKH mất 10 phút xử lý thủ công | Tiết kiệm ~350 giờ CSKH/tháng, giảm thời gian giải quyết từ 24h xuống 30 giây | Có (lát cắt gọn, ranh giới AI/code rõ) | **CHỌN** |
-| D2. Đặt đơn nhóm có ràng buộc | ~1.000 đơn nhóm văn phòng | 2–4 lần / tháng | Người đặt mất 20–30 phút gom món, tính tiền, check dị ứng | Tiết kiệm thời gian đặt đơn | Khó kịp (logic gom giỏ & menu nhiều biến) | Loại |
-| D3. Trả hàng, hoàn tiền sàn TMĐT | ~5.000 đơn đổi trả / tháng | 1 lần / vài tháng | 2–5 ngày chờ đợi, nguy cơ tranh chấp giữa người mua và người bán | Giảm tải trọng tài sàn | Khó kịp (chu trình trả hàng dài ngày, nhiều bên) | Loại |
+| **D1. Xử lý khiếu nại đơn thiếu món** | ~3.000 đơn sự cố / 100k đơn *(tự ước tính; tỷ lệ 3,00% tham chiếu từ mẫu ShopeeFood `evidence/data-mining.md`)* | 1–2 lần / khách thường xuyên *(tự ước tính)* | Khách mất 5–15 phút gửi khiếu nại (`P2`) + chờ 30 phút (`P1`) đến nhiều ngày (`R320`, `R370`); CSKH mất ~10 phút xử lý *(tự ước tính)* | Tiết kiệm ~350 giờ CSKH/tháng *(tự ước tính)*, rút thời gian giải quyết ca nhỏ xuống <30 giây | Có (lát cắt gọn, ranh giới AI/code rõ) | **CHỌN** |
+| D2. Đặt đơn nhóm có ràng buộc | ~1.000 đơn nhóm văn phòng *(tự ước tính)* | 2–4 lần / tháng *(tự ước tính)* | Người đặt mất 20–30 phút gom món, tính tiền, check dị ứng *(tự ước tính)* | Tiết kiệm thời gian đặt đơn *(tự ước tính)* | Khó kịp (logic gom giỏ & menu nhiều biến) | Loại |
+| D3. Trả hàng, hoàn tiền sàn TMĐT | ~5.000 đơn đổi trả / tháng *(tự ước tính)* | 1 lần / vài tháng *(tự ước tính)* | 2–5 ngày chờ đợi, nguy cơ tranh chấp giữa người mua và người bán *(tự ước tính)* | Giảm tải trọng tài sàn *(tự ước tính)* | Khó kịp (chu trình trả hàng dài ngày, nhiều bên) | Loại |
 
-- **Impact / tháng** của hướng chọn = 3.000 ca khiếu nại × 70% ca giải quyết tự động × 10 phút CSKH = 21.000 phút (~350 giờ nhân viên / tháng) *(tự ước tính trên quy mô 100.000 đơn/tháng)*.
+- **Impact / tháng** của hướng chọn = 3.000 ca khiếu nại *(tự ước tính từ 100.000 đơn/tháng × 3,00% tỷ lệ tham chiếu mẫu ShopeeFood `evidence/data-mining.md`)* × 70% ca trong hạn mức giải quyết tự động *(tự ước tính)* × 10 phút CSKH/ca *(tự ước tính)* = **21.000 phút (~350 giờ nhân viên / tháng)**.
 - Hướng ĐÃ LOẠI + vì sao: Hướng D2 (gom đơn nhóm) và D3 (trả hàng sàn) bị loại vì phạm vi lớn, chu trình xử lý kéo dài nhiều bên, khó kiểm chứng và demo trọn vẹn trong 2 phút của hackathon.
-- Số lần / tháng của từng kiểu người dùng (dùng cho persona ở §8):
+- Số lần / tháng của từng kiểu người dùng (dùng cho persona ở §8, *(tự ước tính)*):
   - Khách văn phòng đặt thường xuyên: 15–20 đơn/tháng, khiếu nại 1–2 lần/tháng.
   - Khách thỉnh thoảng đặt: 2–4 đơn/tháng, khiếu nại 1 lần / 3 tháng.
   - Khách khiếu nại nhiều lần / bất thường: 4–5 lần khiếu nại/tháng.
@@ -144,15 +147,18 @@ flowchart TD
 - Ai có thể bị hại nếu AI sai, và nhóm chặn thế nào: __
 
 ## §10. Phân công & changelog
-- Phân công có tên: Nguyễn Tùng Dương (Đội trưởng), Nguyễn Ngọc Vinh, Nguyễn Lâm Tùng, Đỗ Duy Tùng.
-- Dùng AI vào việc gì (2–3 dòng; chi tiết `docs/ai-usage.md`): __
+- Phân công có tên: Nguyễn Tùng Dương (Đội trưởng: Điều phối, Spec & nộp CP), Nguyễn Ngọc Vinh (Đào data review, phỏng vấn & bằng chứng pain), Nguyễn Lâm Tùng (Bộ câu thử benchmark, metric spec & báo cáo đánh giá), Đỗ Duy Tùng (Codebase, nối model thật & mô phỏng chi phí).
+- Dùng AI vào việc gì (2–3 dòng; chi tiết `docs/ai-usage.md`): Dùng coding agent (Google Antigravity / AI assistant) hỗ trợ dựng khung code, rà soát câu thử góc cạnh, định dạng tài liệu theo rubric và kiểm tra đối chiếu file. Mọi số liệu bằng chứng, chấm điểm benchmark và quyết định kiến trúc đều do thành viên kiểm tra trực tiếp.
 - Nhật ký thay đổi — **mọi thay đổi sau CP2 19:30 Thứ Sáu 27/11 phải có dòng ở đây**:
 
 **CP2 → CP4** (vd thu hẹp lát cắt, hỏi thêm người dùng, lần cải tiến trước lượt 2)
 
 | Thời điểm | Đổi gì | Vì sao (trỏ về câu thử / lỗi / bằng chứng nào) |
 |---|---|---|
-|  |  |  |
+| 27/11 23:22 | Nối model thật (`google/gemini-3.5-flash`) và chạy lượt 1 `eval/run-1.csv` + `traces/run-1.jsonl` (Run ID: `run-1@20261127-232220`) | Hoàn thành yêu cầu gọi AI thật ở quyết định trung tâm cho CP3 (PR #7, PR #8) |
+| 28/11 00:42 | Bổ sung 3 ghi chép phỏng vấn (`P1.md`, `P2.md`, `P3.md`) và cập nhật kết luận giả thuyết ở `evidence/summary.md` | Kiểm chéo nguồn đào data review `evidence/data-mining.md` bằng lời kể người dùng thật (PR #10) |
+| 28/11 00:45 | Chấm đủ 26/26 câu `eval/run-1.csv` (22/26 = 85%), viết `eval/report.md` (3 nhóm lỗi: `TC01`, `TC03`, `T03`, `K06`) và điền kết quả lượt 1 vào `spec.md` §7 | Hoàn thiện báo cáo lượt 1 cho CP3 và xác định nhóm lỗi cần sửa ở CP4 (PR #9) |
+| 28/11 08:00 | Khôi phục `eval/README.md` (bị ghi đè khi merge PR #10), bổ sung chấm đối chiếu độc lập 5/5 output (Nguyễn Tùng Dương), đồng bộ `spec.md` §1–§2 & `canvas.md` dòng 4 với `evidence/summary.md` | Đảm bảo đồng nhất bằng chứng & hồ sơ đánh giá trước mốc CP3 10:00 |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
