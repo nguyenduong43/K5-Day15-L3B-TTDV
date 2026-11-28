@@ -59,6 +59,15 @@ def _extract_intent_and_entities(text: str) -> dict:
     ]
     safety_risk = any(kw in text_lower for kw in safety_keywords)
 
+    # Nhận diện khiếu nại giao trễ giờ (ngoài lát cắt thiếu món)
+    delay_keywords = ["giao trễ", "giao chậm", "đến trễ", "đến chậm", "trễ giờ", "chờ lâu", "trễ mất", "trễ hơn"]
+    is_delay = any(dk in text_lower for dk in delay_keywords)
+
+    # Nhận diện khiếu nại ngoài phạm vi hoặc đòi voucher vượt hạn mức
+    is_canceled_order = any(w in text_lower for w in ["đơn bị hủy", "đơn huỷ", "đã hủy", "hủy từ hai tháng", "hủy từ 2 tháng"])
+    is_wrong_order = any(w in text_lower for w in ["giao sai món", "sai món", "không đúng món", "giao nhầm"])
+    demands_large = bool(re.search(r'\b(voucher\s*(100k|200k|300k|500k|100\.000|200\.000|300\.000)|100k|200k|300k|500k|100\.000|200\.000|300\.000|đền gấp đôi|gấp đôi)\b', text_lower))
+
     # 3. Gọi model AI phân tích ngữ nghĩa (ghi nhận token vào tracing)
     prompt = f"Phân tích tin nhắn sau:\n{text}"
     model_res = call_model(SYSTEM_EXTRACTOR, prompt)
@@ -102,7 +111,11 @@ def _extract_intent_and_entities(text: str) -> dict:
         "order_id": order_id,
         "missing_item": ai_item,
         "safety_risk": safety_risk,
-        "is_vague": ai_vague
+        "is_vague": ai_vague,
+        "is_delay": is_delay,
+        "is_canceled_order": is_canceled_order,
+        "is_wrong_order": is_wrong_order,
+        "demands_large": demands_large
     }
 
 
@@ -133,6 +146,16 @@ def answer(text: str) -> dict:
 
     # NHÁNH 2: Thiếu mã đơn hàng
     if not order_id:
+        if parsed.get("is_canceled_order") or "300k" in text.lower():
+            note("Yêu cầu đền bù đơn hủy / vượt hạn mức thiếu mã đơn -> Từ chối lịch sự & hướng dẫn CSKH")
+            return {
+                "output": "Dạ hệ thống tự động không thể xử lý yêu cầu đền bù vượt hạn mức chính sách (tối đa 50.000 VNĐ) cũng như các sự cố đơn hàng đã hủy từ trước. Bạn vui lòng cung cấp Mã đơn hàng (ví dụ: ORD-101) để hệ thống chuyển chuyên viên CSKH kiểm tra tiến độ hoàn tiền ngân hàng cho bạn nhé."
+            }
+        if parsed.get("is_wrong_order") or parsed.get("demands_large"):
+            note("Yêu cầu voucher vượt hạn mức / giao sai món thiếu mã đơn -> Nêu rõ hạn mức & hướng dẫn CSKH")
+            return {
+                "output": "Dạ hệ thống tự động chỉ hỗ trợ bồi thường sự cố thiếu món với hạn mức tối đa 50.000 VNĐ và không tự động cấp voucher 100.000 VNĐ. Đối với sự cố giao sai món, bạn vui lòng cung cấp Mã đơn hàng (ví dụ: ORD-101) để hệ thống kiểm tra và chuyển chuyên viên CSKH hỗ trợ giải quyết cho bạn nhé."
+            }
         note("Thiếu mã đơn hàng -> Yêu cầu bổ sung")
         return {
             "output": "Dạ bạn vui lòng cung cấp Mã đơn hàng (ví dụ: ORD-101) để hệ thống kiểm tra danh sách món và hỗ trợ xử lý bồi thường ngay cho bạn ạ."
@@ -149,6 +172,13 @@ def answer(text: str) -> dict:
     order = order_info["order"]
     items_in_order = [it["name"] for it in order.get("items", [])]
     items_str = ", ".join(items_in_order)
+
+    # NHÁNH 2.5: Khiếu nại giao trễ (ngoài lát cắt thiếu món)
+    if parsed.get("is_delay") and not missing_item:
+        note(f"Khiếu nại giao trễ đơn {order_id}")
+        return {
+            "output": f"Dạ hệ thống rất tiếc về sự cố đơn hàng {order_id} bị giao trễ. Theo chính sách của sàn, sự cố giao trễ từ trên 30 phút mới áp dụng tặng voucher bù đắp; đơn của bạn hiện trễ dưới 30 phút nên hệ thống chưa thể cấp voucher trễ giờ tự động. Hệ thống chân thành cáo lỗi cùng bạn!"
+        }
 
     # NHÁNH 3: Thu hẹp phạm vi khi không chắc (Nguyên tắc G10)
     if is_vague or not missing_item:
@@ -195,9 +225,10 @@ def answer(text: str) -> dict:
             reason=reason,
             summary=f"Khiếu nại món {claim_check.get('item_name', missing_item)} đơn {order_id}: {reason}"
         )
+        reason_clean = reason.rstrip('.').lower()
         msg = (
             f"Dạ hệ thống đã tiếp nhận khiếu nại món '{claim_check.get('item_name', missing_item)}' cho đơn hàng {order_id}. "
-            f"Do {reason.lower()}, ca khiếu nại này đã được chuyển đến chuyên viên Chăm sóc Khách hàng "
+            f"Do {reason_clean}, ca khiếu nại này đã được chuyển đến chuyên viên Chăm sóc Khách hàng "
             f"(Mã hỗ trợ: {escalation['ticket_id']}) để xem xét và xử lý giải pháp phù hợp nhất cho bạn."
         )
         return {"output": msg}
