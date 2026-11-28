@@ -1,9 +1,4 @@
-"""Khung chạy bản chạy thử tối thiểu (dòng lệnh): gõ đầu vào → answer() trong agent.py → in kết quả.
-
-Chạy bằng: python run.py   (macOS/Linux có thể là python3, Windows có thể là py)
-Nhóm thay bằng giao diện của mình (web, bot…) nhưng giữ `python run.py` là lệnh duy nhất
-để chạy bản chạy thử (sửa hàm run_app() trong run.py nếu cần).
-"""
+"""Chạy bản thử web bằng python run.py. Đầu vào chuyển hướng dùng dòng lệnh."""
 import os
 import sys
 
@@ -26,7 +21,7 @@ def _where(e):
     base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     return os.path.relpath(p, base).replace(os.sep, "/") if p.startswith(base) else path
 
-def main() -> int:
+def run_cli() -> int:
     try:
         import tracing
         from agent import answer
@@ -63,6 +58,18 @@ def main() -> int:
         print(result.get("output", "") if isinstance(result, dict) else result)
         print("   (model: %s · gọi model %d lần · công cụ %d lần · token vào %d / ra %d)"
               % (", ".join(s["models"]) or "—", s["model_calls"], s["tool_calls"], s["tokens_in"], s["tokens_out"]))
+
+
+def main() -> int:
+    interface = os.environ.get("TTDV_INTERFACE") or ("web" if sys.stdin.isatty() else "cli")
+    if interface == "cli":
+        return run_cli()
+    if interface == "web":
+        from web_app import run_web
+
+        return run_web(open_browser=sys.stdin.isatty())
+    print("TTDV_INTERFACE nhận web hoặc cli.")
+    return 1
 
 
 if __name__ == "__main__":
