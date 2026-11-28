@@ -76,7 +76,7 @@ def call_openai(system, user, base_url=None):
         "X-Title": "Food Delivery Dispute AI"
     }
     data = post_json(url, headers,
-                     {"model": MODEL_NAME or "gpt-4o-mini", "messages": messages})
+                     {"model": MODEL_NAME or "gpt-4o-mini", "messages": messages, "max_tokens": 2048})
     u = data.get("usage", {})
     return {
         "text": data["choices"][0]["message"]["content"],
