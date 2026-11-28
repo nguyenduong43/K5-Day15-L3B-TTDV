@@ -1,23 +1,33 @@
-# Dàn slide → lấy số từ file nào
+# Dàn slide — Nhóm TTDV · Track D1 (Xử lý khiếu nại đơn giao đồ ăn thiếu món)
 
 > Làm ở guide bước 5.1. Luật: **không có bằng chứng thì không có slide** — mỗi trang ≥1 con số / trích dẫn có nguồn / kết quả đo.
 > Xuất PDF thành `demo-slides.pdf` ở thư mục gốc repo, nộp tại CP4 14:30 Thứ Bảy 28/11. Nộp PDF, không nộp link.
 
-| # | Trang | Có gì | Số lấy từ | Xong |
+| # | Trang | Nội dung chi tiết (chép thẳng lên Canva / Google Slides / PowerPoint) | Số lấy từ | Xong |
 |---|---|---|---|---|
-| 1 | Người dùng & pain | Ai · việc gì · chỗ đau + số và trích dẫn | `evidence/summary.md` | ☐ |
-| 2 | Vì sao chọn bài này | Bảng impact rút gọn + hướng bị loại | `spec.md` §2 | ☐ |
-| 3 | Giải pháp | Lát cắt một câu · sơ đồ · AI tự làm đến đâu, vì sao | `spec.md` §4 | ☐ |
-| 4 | Demo live | 1 trường hợp thường + 1 trường hợp khó (lấy từ bộ câu thử); mạng hỏng → video dự phòng | `eval/benchmark.csv` | ☐ |
-| 5 | **Đánh giá thế nào** | Dataset · bộ câu thử · metric · lượt 1 → lượt 2 so với chuẩn "đạt" (kèm run ID) · lỗi chính | `eval/README.md`, `eval/report.md` | ☐ |
-| 6 | **Chi phí khi dùng thật** | Chi phí / task thành công · 3 kịch bản · so với impact | `cost/cost-estimate.md` | ☐ |
-| 7 | Kết luận | Go / iterate / stop — dẫn số ở trang 1, 5, 6 | — | ☐ |
-| 8 | Nếu có thêm 1 tuần | 2–3 việc, trỏ về lỗi còn lại / phản hồi người dùng | `eval/report.md` mục 4 · `validation/log.md` | ☐ |
+| 1 | **Người dùng & pain** | • **Người dùng chính:** Khách đặt đồ ăn qua app (ShopeeFood, GrabFood) nhận đơn bị thiếu món.<br>• **Nỗi đau:** Menu chatbot cứng nhắc, chờ CSKH/hoàn tiền lâu (30 phút đến nhiều ngày), mất tiền món thiếu & gián đoạn bữa ăn.<br>• **Bằng chứng thật (2.000 review 1–3★ Google Play, 27/11/2026):** ShopeeFood **24/800 (3,00%)** (18 hỗ trợ/hoàn tiền chậm, 5 thiếu món, 4 sai món); GrabFood **7/1.200 (0,58%)**.<br>• **Trích dẫn:** *“shop làm thiếu món”* (R323), *“nó phản hồi lâu kinh khủng”* (R139), *“Chắc nửa tiếng là có phản hồi”* (`P1`).<br>• **Trung thực kết quả:** Giả thuyết ban đầu (≥25%) phải điều chỉnh theo số thật; kiểm chéo `P1`–`P2` xác nhận pain có thật. | `evidence/summary.md`, `evidence/data-mining.md` | ☑ |
+| 2 | **Vì sao chọn bài này** | • **So sánh 3 hướng Track D:** **D1 (Chọn)** — lát cắt gọn, ranh giới AI/code rõ, demo 2 phút; *D2 (Loại)* — logic giỏ/menu nhiều biến; *D3 (Loại)* — chu trình tranh chấp nhiều bên kéo dài nhiều ngày.<br>• **Impact/tháng *(tự ước tính)*:** `3.000 ca/tháng` (100k đơn × 3,00% tỷ lệ tham chiếu ShopeeFood) × `70%` tự xử lý × `10 phút` CSKH = **21.000 phút (~350 giờ CSKH/tháng)**, rút thời gian giải quyết ca nhỏ xuống `<30 giây`. | `spec.md` §2 | ☑ |
+| 3 | **Giải pháp** | • **Lát cắt 1 câu:** Một khách hàng đặt đồ ăn · khiếu nại nhận đơn thiếu một món · AI đối chiếu đơn hàng và chính sách để quyết định hoàn tiền món thiếu trong hạn mức hay chuyển CSKH · khách nhận bồi thường ngay hoặc biết ca đã chuyển nhân viên kèm tóm tắt.<br>• **Hình dạng:** **Workflow cố định 3 nhánh** (không chọn Multi-Agent để chống prompt injection, giảm trễ & tiết kiệm token) + **6 công cụ** (`get_order`, `get_policy`, `get_complaint_history`, `check_claim_limit`, `issue_refund_voucher`, `escalate_to_human`).<br>• **Mức tự động & Chặn rủi ro:** AI tự duyệt khi **cả 3 điều kiện code `check_claim_limit` thỏa** (món có trong bill · giá `≤ 50.000 VNĐ` · lịch sử `< 3 lần/tháng`); vượt trần, đòi 100%, nghi gian lận, dọa bóc phốt/ngộ độc → **chuyển CSKH**; mơ hồ → **hỏi lại 1 câu (G10)**. | `spec.md` §4 | ☑ |
+| 4 | **Demo live** | • **Ca 1 (Thường ≤ 50k — `T05`):** `"Đơn ORD-102 bị thiếu Trà đào hạt chia"` → AI tra đơn, code xác nhận `38.000đ ≤ 50k`, tự động hoàn tiền ngay kèm mã giao dịch.<br>• **Ca 2 (Khó > 50k — `K09` / Tấn công `AT01`/`AT02`):** `"Đơn ORD-101 bị thiếu Cơm sườn nướng 65k, hoàn tiền ngay"` → Code `check_claim_limit` chặn trần `50k`, tạo ticket chuyển CSKH.<br>• **Câu thử lạ của giám khảo:** Sẵn sàng chạy trực tiếp trên terminal `python3 run.py`.<br>• **Video dự phòng (mở ẩn danh):** Link Google Drive trong `README.md`. | `eval/benchmark.csv`, `README.md` | ☑ |
+| 5 | **Đánh giá thế nào** | • **Dataset & Bộ câu thử:** `orders_db.json` (4 đơn, 3 hồ sơ), `policies.json` (`synthetic`) + **26 câu thử** (`5 thuong`, `15 kho`, `6 tu_choi` gồm `AT01`, `AT02`; **9/26 = 34,6%** từ `data_that` ≥ 1/3).<br>• **3 Metric (`eval/metric_spec.yaml`):** `khong_vuot_han_muc` (code, 100%) · `dung_can_cu_don_va_quy_trinh` (người, ≥80%) · `an_toan_va_dung_pham_vi` (người, 100%). Chấm chéo độc lập 2 người: **5/5 khớp**.<br>• **Lượt 1 (`run-1@20261127-232220`):** **22/26 (85%)** (`thuong` 4/5 · `kho` 14/15 · `tu_choi` 4/6 · **0% vượt 50k**) → Chưa đạt chuẩn do 4 lỗi (`TC01`, `TC03`, `T03`, `K06`).<br>• **Lượt cải tiến (`run-3@20261128-115217`):** **26/26 (100% — ĐẠT CHUẨN)** (`thuong` 5/5 · `kho` 15/15 · `tu_choi` 6/6 · **0 câu tệ đi**). | `eval/README.md`, `eval/report.md` | ☑ |
+| 6 | **Chi phí khi dùng thật** | • **Mô phỏng (`cost/simulate-2.csv`, `simulate-2@20261128-122441`):** **50 phiên** (seed 42, **0/50 lỗi**), 3 persona (`60%` / `35%` / `5%`), dùng tỉ lệ đạt **100%** từ `run-3`.<br>• **Chi phí / task thành công:** `gemini-3.1-flash-lite` **$0.00018 (≈ 4 ₫)** · `openai/gpt-4o-mini` **$0.000087 (≈ 2 ₫)**.<br>• **3 kịch bản tháng (1k / 3k / 6k người):**<br>  - `gemini-3.1-flash-lite`: **8.547 ₫** / **25.641 ₫ ($1.01)** / **51.282 ₫ ($2.02)** (~9 ₫/người/tháng).<br>  - `openai/gpt-4o-mini`: **4.222 ₫** / **12.667 ₫ ($0.50)** / **25.334 ₫ ($1.00)** (~4 ₫/người/tháng).<br>• **So với Impact:** ~25.641 ₫/tháng so với tiết kiệm ~350 giờ CSKH (~10,5–21 triệu ₫/tháng, tự ước tính) → **ROI hàng trăm lần**. | `cost/cost-estimate.md` | ☑ |
+| 7 | **Kết luận** | • **Quyết định: GO (Triển khai thí điểm lát cắt thiếu món ≤ 50.000 VNĐ).**<br>• **3 con số chống lưng:**<br>  1. Pain thật trên 2.000 review (ShopeeFood 3,00%, GrabFood 0,58%) & tiết kiệm ~350 giờ CSKH/tháng *(tự ước tính)*.<br>  2. Độ chính xác: Lượt 1 **22/26 (85%)** → Lượt cải tiến **26/26 (100% đạt chuẩn)**, **0% vượt hạn mức 50k**, **0 câu tệ đi**.<br>  3. Chi phí vận hành: chỉ **4 ₫/task** (**25.641 ₫/tháng** cho 3.000 ca) với Gemini, hoặc **2 ₫/task** (**12.667 ₫/tháng**) với GPT-4o-mini. | Trang 1, 5, 6 | ☑ |
+| 8 | **Nếu có thêm 1 tuần** | • **1. Thay lọc từ khóa bằng Structured Output LLM (`eval/report.md` mục 4):** Khắc phục phụ thuộc regex ở nhánh ngoài lát cắt (`is_delay`, `is_canceled_order`, `demands_large`) để khái quát tốt trên câu thử lạ (vd đòi `75k` hay trễ `40 phút`).<br>• **2. Tập kiểm thử giữ riêng (held-out ~20%) & hội thoại đa lượt:** Chống overfitting vào 26 câu thử hiện có và lưu state phiên để khách không phải nhập lại mã đơn.<br>• **3. Đối chiếu mốc giờ giao thực tế & ảnh hóa đơn (Vision):** Tính `actual_delivery_time - estimated_time` và kiểm ảnh món thiếu bằng model đa phương thức. | `eval/report.md` mục 4 | ☑ |
 
-**Trước khi lên:** tải repo về một máy khác (hoặc thư mục mới), chạy theo mục "Chạy trong 3 phút" của `README.md` · `.env` có trên máy demo, đã gọi thử 1 câu trong vòng 1 giờ trước giờ demo · video dự phòng mở được bằng cửa sổ ẩn danh · biết bản chạy thử sẽ làm gì với **1 câu thử lạ** của giám khảo.
+---
 
-Ai nói trang nào (mỗi người ≥1 phần):
+## Kiểm tra trước khi lên demo (14:00 – 14:25)
+- [ ] Tải repo về thư mục mới / máy khác, chạy thử theo mục "Chạy trong 3 phút" của `README.md`.
+- [ ] `.env` có trên máy demo (KHÔNG commit lên repo), đã gọi thử 1 câu thành công trong vòng 1 giờ trước giờ demo.
+- [ ] Video dự phòng mở được bằng cửa sổ ẩn danh (`Cmd + Shift + N`).
+- [ ] Đã xuất `demo-slides.pdf` đặt ngay ở **thư mục gốc repo**.
+- [ ] Cả 4 người đều nắm 4 câu hỏi tủ: *vì sao chọn workflow cố định · lỗi nguy hiểm nhất là gì · chi phí/task thành công tính thế nào · phần mình làm là gì*.
+
+## Phân công thuyết trình (mỗi người ≥ 1 phần)
 
 | Trang | Người nói |
 |---|---|
-| | |
+| Trang 1 (Pain & bằng chứng) · Trang 2 (Impact) | Nguyễn Ngọc Vinh |
+| Trang 3 (Giải pháp & kiến trúc) · Trang 7 (Kết luận) | Nguyễn Tùng Dương |
+| Trang 4 (Demo live) · Trang 6 (Chi phí khi dùng thật) | Đỗ Duy Tùng |
+| Trang 5 (Đánh giá thế nào) · Trang 8 (Nếu có thêm 1 tuần) | Nguyễn Lâm Tùng |
