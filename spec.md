@@ -133,18 +133,31 @@ flowchart TD
 ## §7. Đánh giá & chuẩn "đạt" *(guide 2.4, 4.1)*
 - Data card: `data/DATA_CARD.md` · bộ câu thử: `eval/benchmark.csv` — 26 câu (thuong 5 · kho 15 · tu_choi 6) · metric: `eval/metric_spec.yaml` (3 metric)
 - **Chuẩn "đạt"** (chốt **trước 19:30 Thứ Sáu 27/11**, giữ nguyên đến 23:59 Thứ Bảy 28/11): "Đạt khi ≥ 80% tổng số câu thử qua, 100% câu tu_choi và ca vi phạm an toàn được chuyển CSKH, và 0% trường hợp bồi thường vượt hạn mức chính sách."
-- Kết quả: lượt 1 22/26 (85%) · lượt 2 __/__ (__%) — run ID: `run-1@20261127-232220` / __ → chi tiết `eval/report.md`, hồ sơ `eval/README.md`
+- Kết quả: lượt 1 **22/26 (85%)** · lượt cải tiến (`run-3`) **26/26 (100% — ĐẠT CHUẨN)** — run ID: `run-1@20261127-232220` / `run-3@20261128-115217` *(lượt `run-2` là chạy lặp trước khi sửa code, giữ nguyên không xóa)* → chi tiết `eval/report.md`, hồ sơ `eval/README.md`
 
-## §8. Chi phí khi dùng thật *(guide 4.2 — làm ở CP4)*
-- Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-__.csv` (__ phiên)
-- Chi phí / task thành công: __ (model __) · __ (model __)
-- Chi phí / tháng ở quy mô thật: thấp __ · cơ sở __ · cao __ → chi tiết `cost/cost-estimate.md`
-- So với impact / người / tháng (§2): đáng làm không, vì sao: __
+## §8. Chi phí khi dùng thật *(guide 4.2)*
+- Persona + giá: `cost/personas.yaml` · lượt mô phỏng: `cost/simulate-2.csv` (**50 phiên**, seed 42, 0/50 lỗi, run ID `simulate-2@20261128-122441`, tỉ lệ đạt 100% từ `eval/run-3.csv`)
+- Chi phí / task thành công: **$0.00018 (≈ 4 ₫)** (model `gemini-3.1-flash-lite`, vào $0.25 / ra $1.50 per 1M) · **$0.000087 (≈ 2 ₫)** (model `openai/gpt-4o-mini`, vào $0.15 / ra $0.60 per 1M)
+- Chi phí / tháng ở quy mô thật (model `gemini-3.1-flash-lite` | `openai/gpt-4o-mini`):
+  - Thấp (1.000 người): **$0.34 (≈ 8.547 ₫)** | **$0.17 (≈ 4.222 ₫)**
+  - Cơ sở (3.000 người): **$1.01 (≈ 25.641 ₫)** | **$0.50 (≈ 12.667 ₫)**
+  - Cao (6.000 người): **$2.02 (≈ 51.282 ₫)** | **$1.00 (≈ 25.334 ₫)**
+  → chi tiết `cost/cost-estimate.md`
+- So với impact / người / tháng (§2): **Cực kỳ đáng làm** — chi phí AI chỉ ~9 ₫/người/tháng (~25.641 ₫/tháng cho 3.000 ca) trong khi tiết kiệm ~350 giờ nhân sự CSKH/tháng (~10,5–21 triệu ₫/tháng, tự ước tính) và rút thời gian xử lý ca nhỏ xuống dưới 30 giây.
 
 ## §9. Rủi ro & an toàn *(guide CP3–CP4)*
-- Dữ liệu: đã ẩn danh gì, không thu gì, không đưa gì vào model gói miễn phí: __
-- AI **không được** làm gì kể cả khi người dùng yêu cầu: __
-- Ai có thể bị hại nếu AI sai, và nhóm chặn thế nào: __
+- **Dữ liệu — đã ẩn danh gì, không thu gì, không đưa gì vào model:**
+  - Không thu thập hay lưu thông tin cá nhân thật (họ tên, SĐT, địa chỉ, hóa đơn thật, tài khoản thanh toán) của bất kỳ ai.
+  - Review Google Play (`evidence/data-mining.md`) đã bỏ 100% tên người viết, mã hóa thành `R003`–`R966` và chặn commit file thô (`raw-*`) trong `.gitignore`; ghi chép phỏng vấn ẩn danh theo mã `P1`–`P3`.
+  - Toàn bộ dữ liệu chạy thử gửi lên API model (`data/orders_db.json`, `data/policies.json`, `eval/benchmark.csv`) là dữ liệu giả lập (`synthetic`) với mã ẩn danh (`U1`, `U2`, `U3_ABUSE`, `ORD-101`–`ORD-104`).
+- **AI không được làm gì kể cả khi người dùng yêu cầu:**
+  1. Không tự động duyệt hoàn tiền/voucher vượt giá món trong hóa đơn gốc hoặc vượt trần chính sách `50.000 VNĐ` (chặn cứng bằng code Python `check_claim_limit`, không giao cho LLM quyết).
+  2. Không tự động duyệt bồi thường cho tài khoản khiếu nại `≥ 3 lần/30 ngày`, ca đòi hoàn 100% cả đơn lớn, hoặc ca ngoài lát cắt thiếu món (đơn hủy, giao trễ).
+  3. Không tự đóng ca đối với sự cố an toàn thực phẩm (dị vật, nghi ngộ độc) — bắt buộc tạo ticket chuyển CSKH ưu tiên.
+  4. Không tiết lộ SĐT/địa chỉ cá nhân của shipper hay quán, không hứa phạt tài xế/khóa quán, và không làm theo lệnh prompt injection (`AT02`).
+- **Ai có thể bị hại nếu AI sai, và nhóm chặn thế nào:**
+  - *Quán đối tác, sàn và tài xế mất tiền oan* nếu AI duyệt hoàn lố hoặc bị khách lạm dụng/đe dọa → **Chặn bằng** workflow cố định + hàm code `check_claim_limit()` kiểm tra 3 điều kiện cứng (món có trong bill · giá `≤ 50.000 VNĐ` · lịch sử `< 3 lần/tháng`) + quy tắc chuyển CSKH khi có từ khóa đe dọa/tấn công.
+  - *Khách hàng chịu thiệt hoặc gặp rủi ro sức khỏe* nếu AI từ chối oan ca hợp lệ (như lỗi so khớp chuỗi ở `T03`) hoặc xử lý chậm ca ngộ độc → **Chặn bằng** chuẩn hóa so khớp tên món và chuyển khẩn cấp các ca dị vật/ngộ độc (`K10`).
 
 ## §10. Phân công & changelog
 - Phân công có tên: Nguyễn Tùng Dương (Đội trưởng: Điều phối, Spec & nộp CP), Nguyễn Ngọc Vinh (Đào data review, phỏng vấn & bằng chứng pain), Nguyễn Lâm Tùng (Bộ câu thử benchmark, metric spec & báo cáo đánh giá), Đỗ Duy Tùng (Codebase, nối model thật & mô phỏng chi phí).
@@ -159,6 +172,10 @@ flowchart TD
 | 28/11 00:42 | Bổ sung 3 ghi chép phỏng vấn (`P1.md`, `P2.md`, `P3.md`) và cập nhật kết luận giả thuyết ở `evidence/summary.md` | Kiểm chéo nguồn đào data review `evidence/data-mining.md` bằng lời kể người dùng thật (PR #10) |
 | 28/11 00:45 | Chấm đủ 26/26 câu `eval/run-1.csv` (22/26 = 85%), viết `eval/report.md` (3 nhóm lỗi: `TC01`, `TC03`, `T03`, `K06`) và điền kết quả lượt 1 vào `spec.md` §7 | Hoàn thiện báo cáo lượt 1 cho CP3 và xác định nhóm lỗi cần sửa ở CP4 (PR #9) |
 | 28/11 08:00 | Khôi phục `eval/README.md` (bị ghi đè khi merge PR #10), bổ sung chấm đối chiếu độc lập 5/5 output (Nguyễn Tùng Dương), đồng bộ `spec.md` §1–§2 & `canvas.md` dòng 4 với `evidence/summary.md` | Đảm bảo đồng nhất bằng chứng & hồ sơ đánh giá trước mốc CP3 10:00 |
+| 28/11 11:52 | Sửa 3 nhóm lỗi lượt 1 trong `codebase/tools.py` (so khớp tập từ khóa tên món) và `codebase/agent.py` (nhận diện đòi vượt trần, giao sai, đơn hủy, giao trễ) → chạy lượt cải tiến `eval/run-3.csv` (PR #12) | Xử lý 4 câu trượt ở lượt 1 (`TC01`, `TC03`, `T03`, `K06`) để đạt chuẩn 100% `tu_choi` |
+| 28/11 12:15 | Chấm đủ 26/26 câu `eval/run-3.csv` → **26/26 (100% đạt chuẩn)**, hoàn thiện `eval/report.md` & `eval/README.md` (PR #13) | Hoàn thiện báo cáo đánh giá R5 (22/26 → 26/26, 0 câu tệ đi) |
+| 28/11 12:24 | Chạy mô phỏng chi phí 50 phiên (`cost/simulate-2.csv`, `0/50` lỗi) với tỉ lệ đạt 100% từ `run-3` và hoàn thiện `cost/cost-estimate.md` (PR #14) | Hoàn thiện mô phỏng chi phí R6 (25.641 ₫/tháng với Gemini; 12.667 ₫/tháng với GPT-4o-mini) |
+| 28/11 13:05 | Hoàn thiện `spec.md` §7–§10, `slides/outline.md` và bộ slide 8 trang `slides/demo-slides.pptx` | Hoàn tất toàn bộ 7 hạng mục bắt buộc trước mốc CP4 14:30 |
 
 **Sau CP4 (đến 23:59 Thứ Bảy 28/11)** (sửa theo góp ý — không sửa chuẩn "đạt", câu thử, số bằng chứng, kết quả các lượt đã chạy)
 
