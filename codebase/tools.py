@@ -157,12 +157,20 @@ def check_claim_limit(order_id: str, item_name: str) -> dict:
             "reason": f"Không tìm thấy mã đơn hàng '{order_id}' trong hệ thống."
         }
 
-    # Tìm kiếm món trong đơn hàng (so khớp tương đối không phân biệt hoa thường)
+    # Tìm kiếm món trong đơn hàng (so khớp tương đối và bao hàm từ khóa, tránh lỗi lệch từ)
     target = (item_name or "").strip().lower()
+    target_tokens = set(re.findall(r'\w+', target))
     matched_item = None
     for it in order.get("items", []):
         name_lower = it["name"].lower()
-        if target in name_lower or name_lower in target:
+        name_tokens = set(re.findall(r'\w+', name_lower))
+        if (target in name_lower or name_lower in target) or (
+            target_tokens and name_tokens and (
+                target_tokens.issubset(name_tokens) or 
+                name_tokens.issubset(target_tokens) or 
+                len(target_tokens & name_tokens) / len(name_tokens) >= 0.6
+            )
+        ):
             matched_item = it
             break
 
@@ -248,10 +256,11 @@ def escalate_to_human(order_id: str, reason: str, summary: str = "") -> dict:
     Output: dict mã ticket hỗ trợ và mức độ ưu tiên.
     Có tác động ra ngoài không: Có (tạo ticket hỗ trợ trong hệ thống CSKH)."""
     order_id_clean = (order_id or "").strip().upper()
+    ticket_suffix = order_id_clean[-4:] if order_id_clean and order_id_clean != "UNKNOWN" else "GEN"
     return {
         "status": "ticket_escalated",
         "order_id": order_id_clean,
-        "ticket_id": f"TICK-{order_id_clean[-4:] if order_id_clean else 'GEN'}-CSKH",
+        "ticket_id": f"TICK-{ticket_suffix}-CSKH",
         "priority": "HIGH" if "ngộ độc" in reason.lower() or "dị vật" in reason.lower() else "MEDIUM",
         "reason": reason,
         "summary": summary

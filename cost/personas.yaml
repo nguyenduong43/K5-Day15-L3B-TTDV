@@ -28,14 +28,14 @@ personas:           # 3 nhóm khách hàng theo spec.md §2; share cộng lại 
     source: "spec.md §2: Nhóm tài khoản khiếu nại bất thường / nhiều lần (4–5 lần/tháng)"
 
 prices:             # USD / 1 triệu token
-  - model: google/gemini-3.5-flash
-    input: 0.15
-    output: 0.60
-    source: "https://openrouter.ai/models / Google AI Studio pricing (27/11/2026)"
+  - model: gemini-3.1-flash-lite
+    input: 0.25
+    output: 1.50
+    source: "https://ai.google.dev/pricing (Google AI Studio 2026)"
   - model: openai/gpt-4o-mini
     input: 0.15
     output: 0.60
-    source: "https://openai.com/api/pricing (27/11/2026)"
+    source: "https://openai.com/api/pricing (2026)"
 
 usd_to_vnd:
   rate: 25400
