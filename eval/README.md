@@ -40,10 +40,13 @@
 | Lượt | Run ID | Model | Cấu hình (prompt / công cụ / thay đổi) | Đạt / tổng | % | Đạt chuẩn? |
 |---|---|---|---|---|---|---|
 | 1 | `run-1@20261127-232220` | `google/gemini-3.5-flash` | Fixed workflow 3 bước + guardrail `check_claim_limit` (bản đầu CP3) | 22/26 | 85% | Chưa (`tu_choi` 4/6 < 100%) |
-| 2 | *(cập nhật tại CP4 sau khi sửa lỗi lượt 1)* | | | __/__ | | |
+| *(lặp)* | `run-2@20261127-232535` | `google/gemini-3.5-flash` | Chạy lặp trước khi sửa code (output giống `run-1`, giữ nguyên file không xóa) | *(không dùng)* | — | — |
+| 2 (`run-3`) | `run-3@20261128-115217` | `google/gemini-3.5-flash` | Cải tiến commit `a058cd1`: so khớp token tên món (`tools.py`), thêm nhánh từ chối ngoài phạm vi/vượt trần & giao trễ (`agent.py`), sửa mã `TICK-GEN-CSKH` | 26/26 | 100% | **Đạt** |
 
 Lượt chạy lại vì lỗi kỹ thuật, lượt sau CP4: ghi thêm dòng, không sửa dòng cũ.
 
 ## 6. Lỗi chính
 
-- **Lượt 1 (4 câu trượt / 26 câu — 0% vượt hạn mức 50k):** Gồm 3 nhóm lỗi chính: (1) `loi_khong_tu_choi_yeu_cau_vuot_han_muc` (2 câu `TC01`, `TC03` — khách đòi 100k–300k nhưng không có từ khóa `hoàn 100%` nên bot chỉ hỏi mã đơn để "bồi thường ngay" thay vì từ chối/chuyển CSKH); (2) `loi_so_khop_ten_mon` (1 câu `T03` — trích `"lon Coca Cola"` không khớp chuỗi con `"Coca Cola lon"` nên từ chối nhầm ca hợp lệ); (3) `loi_lac_de_ngoai_lat_cat` (1 câu `K06` — khiếu nại giao trễ 25 phút bị hỏi ngược món thiếu). Chi tiết xem `eval/report.md`. *(Phần đã sửa và còn lại sẽ cập nhật sau lượt cải tiến ở CP4.)*
+- **Nhóm lỗi lớn nhất ở lượt 1 (4/26 câu trượt):** `loi_khong_tu_choi_yeu_cau_vuot_han_muc` (2 câu `TC01`, `TC03`), `loi_so_khop_ten_mon` (1 câu `T03`) và `loi_lac_de_ngoai_lat_cat` (1 câu `K06`).
+- **Đã sửa gì (lượt cải tiến `run-3`):** Nâng cấp so khớp tập từ khóa trong `check_claim_limit()`, bổ sung phân loại & từ chối lịch sự cho đơn hủy/giao sai/đòi đền vượt trần/giao trễ trong `agent.py` và sửa hiển thị `TICK-GEN-CSKH` → tỷ lệ đạt tăng từ **22/26 (85%)** lên **26/26 (100%)**, **0 câu tệ đi**.
+- **Còn lại gì:** Nhánh bắt yêu cầu ngoài lát cắt & mức tiền đòi vẫn dựa trên từ khóa/regex và chưa tính số phút giao trễ từ timestamp thực tế (chi tiết xem `eval/report.md` mục 4).
